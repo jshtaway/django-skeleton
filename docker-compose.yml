@@ -4,8 +4,6 @@
 # Docker Compose is a tool that allows you to define and run multi-container Docker applications.
 # It uses a YAML file to configure the services, networks, and volumes required for an application.
 
-version: "3.9"
-
 # Docker Compose configuration for the Django backend service
 services:
   app:
@@ -18,7 +16,7 @@ services:
         - DEV=true
     # maps 8000 on the machine, to 8000 on the docker container
     ports:
-      - "8080:8080"
+      - "8082:8082"
     # map system dir into docker container, updates in local code will be reflected in running container in real time
     volumes:
       - ./app:/app
@@ -38,7 +36,7 @@ services:
       - DB_USER=devuser
       - DB_PASS=changeme
   db:
-    image: mysql:5.7
+    image: mysql:8.0
     environment:
       MYSQL_DATABASE: django
       MYSQL_USER: user
@@ -47,7 +45,7 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
   # db:
-  #   image: mysql:5.7
+  #   image: mysql:8.0
   #   volumes:
   #     - dev-db-data:/var/lib/postgresql/data
   #   environment:
