@@ -1,0 +1,59 @@
+
+# Docker Compose Configuration
+
+# Docker Compose is a tool that allows you to define and run multi-container Docker applications.
+# It uses a YAML file to configure the services, networks, and volumes required for an application.
+
+version: "3.9"
+
+# Docker Compose configuration for the Django backend service
+services:
+  app:
+    depends_on:
+      - db
+    # build from current directory
+    build:
+      context: .
+      args:
+        - DEV=true
+    # maps 8000 on the machine, to 8000 on the docker container
+    ports:
+      - "8080:8080"
+    # map system dir into docker container, updates in local code will be reflected in running container in real time
+    volumes:
+      - ./app:/app
+    # command that runs the service is run by default if not overridden in dockerfile
+    # runserver runs wait_for_db,
+    # then migrations applies any db changes
+    # then runserver starts actual server
+    command: >
+      sh -c "python manage.py wait_for_db &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8080"
+    # command: >
+    #   sh -c "python manage.py runserver 0.0.0.0:8080"
+    environment:
+      - DB_HOST=db
+      - DB_NAME=devdb
+      - DB_USER=devuser
+      - DB_PASS=changeme
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_DATABASE: django
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+    volumes:
+      - mysql_data:/var/lib/mysql
+  # db:
+  #   image: mysql:5.7
+  #   volumes:
+  #     - dev-db-data:/var/lib/postgresql/data
+  #   environment:
+  #     - POSTGRES_DB=devdb
+  #     - POSTGRES_USER=devuser
+  #     - POSTGRES_PASSWORD=changeme
+
+volumes:
+      mysql_data:
