@@ -4,6 +4,8 @@
 # Docker Compose is a tool that allows you to define and run multi-container Docker applications.
 # It uses a YAML file to configure the services, networks, and volumes required for an application.
 
+version: "3.9"
+
 # Docker Compose configuration for the Django backend service
 services:
   app:
