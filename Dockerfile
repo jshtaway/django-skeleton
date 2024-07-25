@@ -9,7 +9,7 @@ COPY requirements.dev.txt /tmp/requirements.dev.txt
 COPY ./app /app
 WORKDIR /app
 
-EXPOSE 8080
+EXPOSE 8082
 
 ARG DEV=false
 
@@ -40,3 +40,4 @@ RUN python -m venv /py && \
 ENV PATH="/py/bin:$PATH"
 
 USER django-user
+
