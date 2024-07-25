@@ -1,5 +1,3 @@
-# test
-
 FROM python:3.9-alpine3.13
 LABEL maintainer="https://github.com/jshtaway"
 
@@ -11,25 +9,23 @@ COPY requirements.dev.txt /tmp/requirements.dev.txt
 COPY ./app /app
 WORKDIR /app
 
-EXPOSE 8080
-
-
+EXPOSE 8082
 
 ARG DEV=false
 
 # create venv, update pip, install dependencies, remove tmp (to keep docker lightweight),
-# create user so we're not opporating in root for security
+# create user so we're not operating in root for security
 # install dev dependencies and give user own access if dev = true
-# postgresql-client: client pacakge needed inside alpine image in order for
-#   cyclopg2 to connect to pestgres
-# postrgresql-dev musl-dev --virtual: sets virtual dependency package help install
+# mysql-client: client package needed inside alpine image in order for
+#   mysqlclient to connect to MySQL
+# mysql-dev musl-dev --virtual: sets virtual dependency package to help install
 #   needed packages, then you can remove them after installation (at the end of command)
 
 RUN python -m venv /py && \
     /py/bin/pip install --upgrade pip && \
-    apk add --update --no-cache postgresql-client && \
+    apk add --update --no-cache mysql-client && \
     apk add --update --no-cache --virtual .tmp-build-deps \
-        build-base postgresql-dev musl-dev && \
+        build-base mariadb-connector-c-dev musl-dev && \
     /py/bin/pip install -r /tmp/requirements.txt && \
     if [ $DEV = "true" ]; \
         then /py/bin/pip install -r /tmp/requirements.dev.txt && \
@@ -44,5 +40,4 @@ RUN python -m venv /py && \
 ENV PATH="/py/bin:$PATH"
 
 USER django-user
-
 
